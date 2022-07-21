@@ -265,7 +265,7 @@ debug = 0
 iteration = 0   
 i,j = 0,0
     
-while (i,j) != (n-1,n-1):
+while (i,j) < (n,0):
     if debug: print("i,j=",i,j)
     
     #if no value has been set previously (S[i][j]=0) let's begin with a 1
@@ -301,12 +301,7 @@ while (i,j) != (n-1,n-1):
     if debug: full_display(S,L,U,R,D)
     
     iteration = iteration + 1
-
-# the last value is not populated by the algorithm
-# however it leaves just one possibility
-for val in range(1,n+1):
-    if val not in S[n-1]: S[n-1][n-1] = val
-         
+     
 print("\n And the solution is...\n")    
 full_display(S,L,U,R,D)
 print("\n#iteration = ",iteration)    
