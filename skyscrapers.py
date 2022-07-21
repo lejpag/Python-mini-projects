@@ -8,6 +8,9 @@
 # Those numbers on the sides will be refered to as "conditions"
 # The heights of the skyscrapers will be often refered as "values"
 
+# FAIL FAIL FAIL
+# does not work with enpty conditions
+
 import sys
 
 grid_size = 4
@@ -27,7 +30,10 @@ def full_display(S,L,U,R,D):
     l=[]
     
     for i in range(n):
-        l.append(str(L[i]) + "|")
+        if str(L[i]):
+            l.append(str(L[i]) + "|")
+        else:
+            l.append(" " + "|")
         for j in range(n):
             l[i] = l[i] + " " + str(S[i][j]) + " |"
         l[i] = l[i] + str(R[i])
@@ -47,7 +53,7 @@ def full_display(S,L,U,R,D):
 choice = input("would you like to choose values around the grid ? (y/n)\n")
 if choice == "n":
     n = 4
-    ex = 1
+    ex = 3
     if ex == 1:
         L=[1,2,3,2]
         R=[3,3,2,1]
@@ -59,10 +65,10 @@ if choice == "n":
         U=[1,2,3,2]
         D=[3,2,1,2]
     elif ex == 3:
-        L=[2,1,3,2]
-        R=[1,3,2,2]
-        U=[2,3,3,1]
-        D=[3,1,2,2]
+        L=["",2,3,""]
+        R=[3,"","",""]
+        U=[1,"",3,2]
+        D=["","","",""]
         
     S = [[" " for i in range(n)] for j in range(n)]
     
@@ -78,22 +84,22 @@ elif choice == "y":
             U[i] = "x"
             full_display(S,L,U,R,D)
             ans = input("please enter the value of \"x\" : ")
-            U[i] = int(ans)
+            U[i] = int(ans) if ans else ""
         if i >= n and i < 2*n:
             R[i%n] = "x"
             full_display(S,L,U,R,D)
             ans = input("please enter the value of \"x\" : ")
-            R[i%n] = int(ans)
+            R[i%n] = int(ans) if ans else ""
         if i >= 2*n and i < 3*n:
             D[i%n] = "x"
             full_display(S,L,U,R,D)
             ans = input("please enter the value of \"x\" : ")
-            D[i%n] = int(ans)
+            D[i%n] = int(ans) if ans else ""
         if i >= 3*n:
             L[i%n] = "x"
             full_display(S,L,U,R,D)
             ans = input("please enter the value of \"x\" : ")
-            L[i%n] = int(ans)
+            L[i%n] = int(ans) if ans else ""
             
     print("\n--> Thank you, let's solve it!\n")
     full_display(S,L,U,R,D)
@@ -112,6 +118,10 @@ S = [[0 for i in range(n)] for j in range(n)]
 #the below matrix will enable the backtracking algorithm to decide whether
 #it consider the value as potentially good or wrong
 K = [[0 for i in range(n)] for j in range(n)]
+
+# another flag matrix for values that are known good
+# for instance values given at the begining of the game
+G = [[0 for i in range(n)] for j in range(n)]
 
 
 #####################################
@@ -215,11 +225,12 @@ def check(S,L,U,R,D):
     #check of side conditions, when applicable
     for k in range(n):
         if not 0 in S[k]:
-            if cL(S,k)!=L[k]: return False
-            if cR(S,k)!=R[k]: return False
+            if cL(S,k)!=L[k] and L[k]: return False
+            if cR(S,k)!=R[k] and R[k]: return False
         #the next block is optional, uncomplete lines can be ignored
         else:
-            if cL(S,k) > L[k]: return False 
+            if L[k]:
+                if cL(S,k) > L[k]: return False 
 #           
 # One may think adding the check from ride site  "if cR(S,k) > R[k]: return False"
 # is a good idea but no
@@ -231,12 +242,13 @@ def check(S,L,U,R,D):
     for k in range(n):
         #complete columns must satisfy the conditions
         if not 0 in [row[k] for row in S]:
-            if cU(S,k) != U[k]: return False
-            if cD(S,k) != D[k]: return False
+            if cU(S,k) != U[k] and U[k]: return False
+            if cD(S,k) != D[k] and D[k]: return False
         #next block is optional, it is enough to check the complete columns
         else:
         #uncomplete columns need to satisfy at least the upper condition
-            if cU(S,k) > U[k]: return False
+            if U[k]:
+                if cU(S,k) > U[k]: return False
         
     return True
     
@@ -301,7 +313,10 @@ while (i,j) < (n,0):
     if debug: full_display(S,L,U,R,D)
     
     iteration = iteration + 1
-     
+
+
+
+         
 print("\n And the solution is...\n")    
 full_display(S,L,U,R,D)
 print("\n#iteration = ",iteration)    
