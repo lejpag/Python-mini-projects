@@ -13,19 +13,29 @@
 
 import sys
 
-grid_size = 4
+grid_size = input("Hi, please enter the grid size: ")
 
-n = grid_size
+n = int(grid_size)
+
+debug = 0
 
 # The following function will display the grid, values, and conditions in the console
 # This can be done in more elegant manner but I did not know about formatted string at that time
 
 def full_display(S,L,U,R,D):
     u = "   "
-    for val in U: u = u + str(val) + "   "
+    for val in U: 
+        if val:
+            u = u + str(val) + "   "
+        else:
+            u = u + " " + "   "
     
     d = "   "
-    for val in D: d = d + str(val) + "   "
+    for val in D:
+        if val:
+            d = d + str(val) + "   "
+        else:
+            d = d + " " + "   "
     
     l=[]
     
@@ -35,7 +45,12 @@ def full_display(S,L,U,R,D):
         else:
             l.append(" " + "|")
         for j in range(n):
-            l[i] = l[i] + " " + str(S[i][j]) + " |"
+            #if the value is not 0
+            if S[i][j]:
+                l[i] = l[i] + " " + str(S[i][j]) + " |"
+            #if value is 0 then do no print anything
+            else:
+                l[i] = l[i] + " " + " " + " |"
         l[i] = l[i] + str(R[i])
             
     line = " +" + n*"---+"
@@ -45,74 +60,62 @@ def full_display(S,L,U,R,D):
     for i in range(n): print(l[i])
     print(line)
     print(d)
-    print("")
 
 # initial user inputs
 # the user can specify the conditions manually or choose some preset values
-    
-choice = input("would you like to choose values around the grid ? (y/n)\n")
-if choice == "n":
-    n = 4
-    ex = 3
-    if ex == 1:
-        L=[1,2,3,2]
-        R=[3,3,2,1]
-        U=[1,2,3,3]
-        D=[2,3,2,1]
-    elif ex == 2:
-        L=[1,2,4,3]
-        R=[2,2,1,2]
-        U=[1,2,3,2]
-        D=[3,2,1,2]
-    elif ex == 3:
-        L=["",2,3,""]
-        R=[3,"","",""]
-        U=[1,"",3,2]
-        D=["","","",""]
+
+print("\nPlease now enter the values around the grid\n")    
+
+S = [[" " for i in range(n)] for j in range(n)]
+L,R,D,U = [" "]*n,[" "]*n,[" "]*n,[" "]*n
+
+for i in range(4*n):
+    if i < n:
+        U[i] = "x"
+        full_display(S,L,U,R,D)
+        ans = input("please enter the value of \"x\" : ")
+        U[i] = int(ans) if ans else ""
+    if i >= n and i < 2*n:
+        R[i%n] = "x"
+        full_display(S,L,U,R,D)
+        ans = input("please enter the value of \"x\" : ")
+        R[i%n] = int(ans) if ans else ""
+    if i >= 2*n and i < 3*n:
+        D[i%n] = "x"
+        full_display(S,L,U,R,D)
+        ans = input("please enter the value of \"x\" : ")
+        D[i%n] = int(ans) if ans else ""
+    if i >= 3*n:
+        L[i%n] = "x"
+        full_display(S,L,U,R,D)
+        ans = input("please enter the value of \"x\" : ")
+        L[i%n] = int(ans) if ans else ""
         
-    S = [[" " for i in range(n)] for j in range(n)]
-    
-    print("\n--> alright in this case we will use the followuing values:\n")
-    full_display(S,L,U,R,D)
-
-elif choice == "y":
-    S = [[" " for i in range(n)] for j in range(n)]
-    L,R,D,U = [" "]*n,[" "]*n,[" "]*n,[" "]*n
-    
-    for i in range(4*n):
-        if i < n:
-            U[i] = "x"
-            full_display(S,L,U,R,D)
-            ans = input("please enter the value of \"x\" : ")
-            U[i] = int(ans) if ans else ""
-        if i >= n and i < 2*n:
-            R[i%n] = "x"
-            full_display(S,L,U,R,D)
-            ans = input("please enter the value of \"x\" : ")
-            R[i%n] = int(ans) if ans else ""
-        if i >= 2*n and i < 3*n:
-            D[i%n] = "x"
-            full_display(S,L,U,R,D)
-            ans = input("please enter the value of \"x\" : ")
-            D[i%n] = int(ans) if ans else ""
-        if i >= 3*n:
-            L[i%n] = "x"
-            full_display(S,L,U,R,D)
-            ans = input("please enter the value of \"x\" : ")
-            L[i%n] = int(ans) if ans else ""
-            
-    print("\n--> Thank you, let's solve it!\n")
-    full_display(S,L,U,R,D)
+full_display(S,L,U,R,D)
        
-else:
-    print("--> Sorry I could not understand your answer, please reply \"y\" or \"n\"")
-    exit()    
+choice = input("Would you like to add some values inside the grid ? (y/n)")
 
+if choice == "y":
+    for i in range(n):
+        for j in range(n):
+            S[i][j] = "x"
+            full_display(S,L,U,R,D)
+            ans = input("please enter the value of \"x\" : ")
+            S[i][j] = int(ans) if ans else 0
+    
+    full_display(S,L,U,R,D)                 
+      
+else:
+    S = [[0 for i in range(n)] for j in range(n)]
+
+print("\n--> Thank you, let's solve this !\n")
 #grid to be filled
-#we decided to initialize the grid with "0"
+#we decided to initialize the grid with  "0"
 #there is no confusion as 0 cannot be a height of building (positive integer)
 #it will also ease the logical tests, 0 being considered as False by Python
-S = [[0 for i in range(n)] for j in range(n)]
+    
+
+
 
 #kill flags matrix
 #the below matrix will enable the backtracking algorithm to decide whether
@@ -271,9 +274,45 @@ def nextt(i,j):
     # ie when we are on the last column
     return [i,j+1] if j < n-1 else [i+1,0]
     
+
+
+#know values for trivial cases
+for i in range(n):
+    if L[i] == 1: S[i][0] = n
+    
+    if R[i] == 1: S[i][n-1] = n
+
+    if L[i] == n: S[i] = [val for val in range(1,n+1)]
+
+    if R[i] == n: S[i] = [val for val in range(n,0,-1)]
+    
+#know values for trivial cases
+for j in range(n):
+    if U[j] == 1: S[0][j] = n
+    
+    if D[j] == 1: S[n-1][j] = n
+    
+    if U[j] == n: 
+        for i in range(n):
+            val = i+1
+            S[i][j] = val
+            
+    if D[j] == n:
+        for i in range(n):
+            val = n-i
+            S[i][j] = val    
+
+print("Adding possible trivial values found before computation :\n")
+full_display(S,L,U,R,D)
+    
+# good flags matrix generation
+for i in range(n):
+    for j in range(n):
+        if S[i][j]: G[i][j] = 1
+        
 #####################################
 #main loop, let's kill it backtrack style !
-debug = 0   
+        
 iteration = 0   
 i,j = 0,0
     
@@ -292,23 +331,28 @@ while (i,j) < (n,0):
     #but if not, it means that we should try another value
     #or go back if there is no other value to try :(
     else:
-        if S[i][j] < n:
-            #In this case it is possible to try the next value
-            S[i][j] = S[i][j] + 1
-            #the possible kill flag must be set to 0 to allow the algorithm to proceed
-            #if this new value satisfies the conditions
+        if G[i][j]:
             if K[i][j]: K[i][j] = 0
-        else:
-            #in this case all possible values have been tried for cell i,j
-            #it means that a former value was already wrong
-            #we need to go back, so we reinitialize the value to 0
-            S[i][j] = 0
-            #we remove the possible kill flag
-            if K[i][j]: K[i][j] = 0
-            #go one step back
             i,j = prev(i,j)
-            #flag the former value as killed to force the algoritm to try another value
             K[i][j] = 1
+        else:
+            if S[i][j] < n:
+                #In this case it is possible to try the next value
+                S[i][j] = S[i][j] + 1
+                #the possible kill flag must be set to 0 to allow the algorithm to proceed
+                #if this new value satisfies the conditions
+                if K[i][j]: K[i][j] = 0
+            else:
+                #in this case all possible values have been tried for cell i,j
+                #it means that a former value was already wrong
+                #we need to go back, so we reinitialize the value to 0
+                S[i][j] = 0
+                #we remove the possible kill flag
+                if K[i][j]: K[i][j] = 0
+                #go one step back
+                i,j = prev(i,j)
+                #flag the former value as killed to force the algoritm to try another value
+                K[i][j] = 1
             
     if debug: full_display(S,L,U,R,D)
     
@@ -319,7 +363,7 @@ while (i,j) < (n,0):
          
 print("\n And the solution is...\n")    
 full_display(S,L,U,R,D)
-print("\n#iteration = ",iteration)    
+print("\n#iteration =",iteration)    
         
         
     
